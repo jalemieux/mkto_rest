@@ -32,6 +32,7 @@ Create a client and authenticate,
       '123-abc-123.mktorest.com',
       '4567e1cdf-0fae-4685-a914-5be45043f2d8'', 
       '7Gn0tuiHZiDHnzeu9P14uDQcSx9xIPPt')
+    client.authenticate
 
 If you need verbosity during troubleshooting, set the client to debug mode
 
