@@ -1,5 +1,6 @@
 module MktoRest
   class Lead
+
     attr_reader :vars, :client
     def initialize(client, args)
       @vars = []
@@ -18,7 +19,7 @@ module MktoRest
     end
 
     def update(args, attr = :id)
-      if attr == :id 
+      if attr == :id
         @client.update_lead_by_id self.id, args
       elsif attr == :email
         @client.update_lead_by_email self.email, args
@@ -26,9 +27,8 @@ module MktoRest
     end
 
     def to_s
-      @vars.map { |k| "#{k} => #{self.send(k)}" }.join(", ")
+      @vars.map { |k| "#{k.inspect}=>#{self.send(k).inspect}" }.join(", ")
     end
+
   end
-
-
 end

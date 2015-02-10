@@ -1,6 +1,6 @@
 # MktoRest
 
-This gem provides some level of abstraction to Marketo REST APIs. Please note that this gem is alpha quality. 
+This gem provides some level of abstraction to Marketo REST APIs. Please note that this gem is alpha quality.
 
 ## Installation
 
@@ -14,33 +14,42 @@ Or you can build the gem:
 
 and include it in your app/gem's Gemfile (this works locally only):
 
-    gem 'mkto_rest'    
+    gem 'mkto_rest'
 
 
 ## Prerequisites
 
-Get the following from your Marketo admin:
-* hostname, i.e. \<munchkin_id\>.mktorest.com
+Get the follwing values related to the **API User** from your Marketo admin:
+* host name, i.e. \<munchkin_id\>.mktorest.com
 * client id, e.g. '4567e1cdf-0fae-4685-a914-5be45043f2d8'
 * client secret, e.g. '7Gn0tuiHZiDHnzeu9P14uDQcSx9xIPPt'
+
+If you are the admin and need to *create* an **API User**, start in the Marketo Community docs here:
+
+  * [Create an API Only User Role](https://community.marketo.com/MarketoArticle?id=kA050000000LJcHCAW)
+  * [Create an API Only User](https://community.marketo.com/MarketoArticle?id=kA050000000LJcCCAW)
+  * [Create a Custom Service for Use with ReST API](https://community.marketo.com/MarketoArticle?id=kA050000000LJcqCAG)
 
 ## Usage
 
 Create a client and authenticate,
 
-    client = MktoRest::Client.new(
-        host: '123-abc-123.mktorest.com', 
-        client_id:  '4567e1cdf-0fae-4685-a914-5be45043f2d8', 
-        client_secret: '7Gn0tuiHZiDHnzeu9P14uDQcSx9xIPPt')
+    client = MktoRest::Client.new({
+      host: '123-abc-123.mktorest.com',
+      client_id: '4567e1cdf-0fae-4685-a914-5be45043f2d8',
+      client_secret: '7Gn0tuiHZiDHnzeu9P14uDQcSx9xIPPt',
+    })
 
 If you need verbosity during troubleshooting, set the client to debug mode
 
     client.debug = true
 
+You can also add a `{debug: true}` to the options hash or the YAML configuration file.
+
 get leads matching an email, print their id and email:
-    
+
     client.get_leads :email, 'sammy@acme.com' do |lead|
-      p "id: #{l.id}, email: #{l.email}"
+      p "id: #{lead.id}, email: #{lead.email}"
     end
 
 fetch a lead and update one of its value:
@@ -48,29 +57,30 @@ fetch a lead and update one of its value:
     client.get_leads :email, 'john@bigcorp.com' do |lead|
       lead.update({ 'CustomField' => 'New Value', 'AnotherField' => 'New value' })
     end
-  
+    client.authenticate
+
 updating a lead, using id, email, etc.
 
     new_values = { 'Firstname' => 'Jeanne' }
-    leads = client.get_leads :email, 'jane@scorp.com' 
+    leads = client.get_leads :email, 'jane@scorp.com'
     # update using id
     leads.first.update(new_values, :id)
     # update using email
     leads.first.update(new_values, :email)
-  
-  creating 2 new leads:
 
-      new_leads = [
-                    {
-                      email: 'jane@scorp.com',
-                      firstName: 'Jane Doe'
-                    },
-                    {
-                      email: 'joe@scorp.com',
-                      firstName: 'Joe Doe'
-                    }
-                  ]
-      client.create_leads new_leads
+creating 2 new leads:
+
+    new_leads = [
+                  {
+                    email: 'jane@scorp.com',
+                    firstName: 'Jane Doe'
+                  },
+                  {
+                    email: 'joe@scorp.com',
+                    firstName: 'Joe Doe'
+                  }
+                ]
+    client.create_leads new_leads
 
 ## Set up
 
@@ -86,19 +96,19 @@ updating a lead, using id, email, etc.
 
 ## Examples
 
-First create the configuration file .mktorest which should contain your client id and key, and hostname, e.g.:
+First create the configuration file .mktorest which should contain your host name, client id, and client secret, and, e.g.:
 
     ---
-    :hostname: '215-CIJ-720.mktorest.com'
-    :client_id: 'f950fg3e-80g5-42cc-9dc4-5eb054cc0836
+    :host: '215-CIJ-720.mktorest.com'
+    :client_id: 'f950fg3e-80g5-42cc-9dc4-5eb054cc0836'
     :client_secret: 'dnGn25KLrtgssy6ecurMPnqQx61vykje'
 
 You can then run the example:
-  
+
     bundle exec ruby examples/update_lead.rb
 
 
-Running it with no arguments will display the usage.    
+Running it with no arguments will display the usage.
 
 ## Contributing
 

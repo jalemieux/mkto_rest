@@ -18,7 +18,18 @@ describe MktoRest do
     @lead1 = MktoRest::Lead.new(@authenticated_client, { name: 'john', email: 'john@acme.com', id: 1} )
   end
 
-
+  context "#authenticated?" do
+    context "before authentication" do
+      it "should be false" do
+        expect(@client.authenticated?) == false
+      end
+    end
+    context "after authentication" do
+      it "should be true" do
+        expect(@authenticated_client.authenticated?) == true
+      end
+    end
+  end
 
   describe "v1 API" do
     context "#authenticated?" do
@@ -33,7 +44,7 @@ describe MktoRest do
         end
       end
     end
-  
+
     # this section tests that the gem code can parse the documented response correctly.
     # repsonses samples are in responses_samples/*.json
     describe "authentication" do
@@ -45,11 +56,11 @@ describe MktoRest do
         expect(@client.valid_until).to_not be_nil
         expect(@client.token_type).to_not be_nil
         expect(@client.scope).to_not be_nil
-      end  
+      end
     end
     describe "leads operations" do
       it "uses correct HTTP GET body and headers" do
-        set_get_leads_stub_request('email', 'john@acme.com', @hostname, @token) 
+        set_get_leads_stub_request('email', 'john@acme.com', @hostname, @token)
         expect { @authenticated_client.get_leads :email, 'john@acme.com' }.not_to raise_error
       end
     end
@@ -58,28 +69,28 @@ describe MktoRest do
 
   describe "lead" do
     let(:sample_lead){
-      [{  
+      [{
          "email" => "kjashaedd-1@klooblept.com",
          "firstName" => "Kataldar-1",
          "postalCode" => "04828"
-      }]
+       }]
     }
     let(:sample_leads) {
-      [{  
+      [{
          "email" => "kjashaedd-1@klooblept.com",
          "firstName" => "Kataldar-1",
          "postalCode" => "04828"
-      },
-      {  
+       },
+       {
          "email" => "kjashaedd-2@klooblept.com",
          "firstName" => "Kataldar-2",
          "postalCode" => "04828"
-      },
-      {  
+       },
+       {
          "email" => "kjashaedd-3@klooblept.com",
          "firstName" => "Kataldar-3",
          "postalCode" => "04828"
-      }]
+       }]
     }
     let(:partition){ 'bizdev'}
 
@@ -109,24 +120,24 @@ describe MktoRest do
 
   end
 
-  
+
   describe "client" do
     describe "get leads" do
       it "should return leads when no block is passed" do
         l = MktoRest::Lead.new(@authenticated_client, { id: 1, email: 'joe@acme.com'})
-        set_get_leads_stub_request('email', l.email, @hostname, @token) 
+        set_get_leads_stub_request('email', l.email, @hostname, @token)
         leads = @authenticated_client.get_leads :email, l.email
         expect(leads.size) == 1
       end
       it "should execute the block passed in on each leads" do
         l = MktoRest::Lead.new(@authenticated_client, { id: 1, email: 'joe@acme.com'})
-        set_get_leads_stub_request('email', l.email, @hostname, @token) 
+        set_get_leads_stub_request('email', l.email, @hostname, @token)
         leads = @authenticated_client.get_leads :email, l.email do |lead|
           lead.email = "newemail@acme.com"
         end
         expect(leads.size) == 1
         expect(leads.first.email) == "newemail@acme.com"
-      end      
+      end
     end
   end
 end

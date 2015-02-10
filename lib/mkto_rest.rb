@@ -6,12 +6,13 @@ require "json"
 module MktoRest
   class Client
     attr_reader :host, :client_id, :client_secret, :token, :expires_in, :valid_until, :token_type, :scope, :last_request_id
+
     def initialize(options = {})
       @host = options[:host]
       @client_id = options[:client_id]
       @client_secret = options[:client_secret]
-      @options = {}
-      @token = ''
+      @options = options.select {|k,v| [:open_timeout,:read_timeout].include?(k) }
+      MktoRest::HttpUtils.debug = true if options[:debug]
     end
 
     #sets / unsets debug mode
@@ -20,14 +21,13 @@ module MktoRest
     end
 
     def authenticated?
-      return ! @token.empty?
+      return ! @token.nil? && ! @token.empty?
     end
 
     # used for testing only
     def __auth(token)
       @token = token
     end
-
 
     # \options:
     #    open_timeout - http open timeout
@@ -99,11 +99,11 @@ module MktoRest
         action: "updateOnly",
         lookupField: 'email',
         input: [
-          {
-            email: email,
-            }.merge(values)
-          ]
-          }.to_json
+                {
+                  email: email,
+                }.merge(values)
+               ]
+      }.to_json
       post data
     end
 
@@ -113,11 +113,11 @@ module MktoRest
         action: "updateOnly",
         lookupField: 'id',
         input: [
-          {
-            id: id
-            }.merge(values)
-          ]
-          }.to_json
+                {
+                  id: id
+                }.merge(values)
+               ]
+      }.to_json
       post data
     end
 
@@ -133,4 +133,5 @@ module MktoRest
       data
     end
   end
+
 end
