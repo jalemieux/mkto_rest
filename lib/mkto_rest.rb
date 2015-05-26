@@ -79,7 +79,7 @@ module MktoRest
       leads
     end
 
-    def create_leads(leads, action="createOnly", partition=nil)
+    def create_leads(leads, action="createOnly", partition=nil, lookupField=nil)
       # leads is an array of objects like:
       #   {
       #    "email":"kjashaedd-3@klooblept.com",
@@ -94,6 +94,7 @@ module MktoRest
         input: leads
       }
       data[:partitionName] = partition if partition
+      data[:lookupField] = lookupField if lookupField
       data = data.to_json
       post data
     end
